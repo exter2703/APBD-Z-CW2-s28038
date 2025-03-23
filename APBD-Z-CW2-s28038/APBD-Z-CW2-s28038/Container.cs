@@ -10,17 +10,25 @@ public abstract class Container
     public double Depth { get; }
     public double MaxCapacity { get; }
     public double OwnWeight { get; }
+    public bool OnShip { get; set; }
 
-    public Container(char typeCode, double height, double depth, double maxCapacity, double ownWeight)
+    public Container(char typeCode, double height, double depth, double maxCapacity, double ownWeight, bool onShip)
     {
         SerialNumb = $"KON-{typeCode}-{counter++}";
         Height = height;
         Depth = depth;
         MaxCapacity = maxCapacity;
         OwnWeight = ownWeight;
+        OnShip = onShip;
     }
     
-    public abstract void Load(double itemMass);
+    public abstract void Load(string productType, double itemMass);
     public abstract void Unload();
+
+    public void GetInfo()
+    {
+        Console.WriteLine($"[KONTENER] {SerialNumb} \n Wysokość: {Height} \n Głębokość: {Depth} \n MaxPojemność: {MaxCapacity} " +
+                          $"\n MasaWłasna: {OwnWeight} \n MasaŁadunku: {ItemMass} \n NaStatku: {OnShip}");
+    }
     
 }

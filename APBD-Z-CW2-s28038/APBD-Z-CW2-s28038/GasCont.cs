@@ -3,9 +3,10 @@
 public class GasCont : Container, IHazardNotifier
 {
     public double Pressure { get; }
+    public bool OnShip { get; set; }
 
     public GasCont(double maxCapacity, double ownWeight, double height, double depth, double pressure)
-        : base('G', maxCapacity, ownWeight, height, depth)
+        : base('G', maxCapacity, ownWeight, height, depth, onShip:false)
     {
         Pressure = pressure;
     }
@@ -15,7 +16,7 @@ public class GasCont : Container, IHazardNotifier
         Console.WriteLine($"[DANGER] {message}");
     }
 
-    public override void Load(double itemMass)
+    public override void Load(string productType, double itemMass)
     {
         if (itemMass > MaxCapacity)
         {
