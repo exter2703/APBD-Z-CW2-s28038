@@ -3,10 +3,9 @@
 public class LiquidCont : Container, IHazardNotifier
 {
     public bool IsDanger { get; }
-    public bool OnShip { get; set; }
 
-    public LiquidCont(double maxCapacity, double ownWeight, double height, double depth, bool isDanger, bool onShip)
-        : base('L', maxCapacity, ownWeight, height, depth, onShip:false)
+    public LiquidCont(double maxCapacity, double ownWeight, double height, double depth, bool isDanger, bool onShip = false)
+        : base('L', height, depth, maxCapacity, ownWeight, onShip)
     {
         IsDanger = isDanger;
     }
@@ -18,19 +17,31 @@ public class LiquidCont : Container, IHazardNotifier
 
     public override void Load(string productType, double itemMass)
     {
+        double limit = IsDanger ? MaxCapacity * 0.5 : MaxCapacity * 0.9;
         if (OnShip)
         {
             Console.WriteLine($"Nie można załadować kontenera {SerialNumb}, ponieważ jest on na statku.");
         }
         else
         {
-            double limit = IsDanger ? MaxCapacity * 0.5 : MaxCapacity * 0.9;
+            double newTotal = ItemMass + itemMass;
 
-            if (itemMass > limit)
+            if (newTotal > limit)
             {
-                NotifyHazard($"Próba załadunku w kontenerze {SerialNumb} ({itemMass} kg) przekracza dozwolony limit {limit} kg.");
+                NotifyHazard($"Próba załadunku w kontenerze {SerialNumb} ({newTotal} kg) przekracza dozwolony limit {limit} kg.");
                 throw new OverfillException("Przekroczono limit załadunku!");
-            } 
+            }
+            else if (newTotal == limit)
+            {
+                ItemMass = newTotal;
+                Console.WriteLine($"Załadowano {itemMass} kg do kontenera {SerialNumb}.");
+                NotifyHazard($"Kontener {SerialNumb} jest maksymalnie załadowany ({limit} kg).");
+            }
+            else
+            {
+                ItemMass = newTotal;
+                Console.WriteLine($"Załadowano {itemMass} kg do kontenera {SerialNumb}.");
+            }
         }
     }
     
@@ -40,7 +51,11 @@ public class LiquidCont : Container, IHazardNotifier
         {
             Console.WriteLine($"Nie można rozładować kontenera {SerialNumb}, ponieważ jest on na statku.");
         }
-        else ItemMass = 0; 
+        else
+        {
+            ItemMass = 0;
+            Console.WriteLine($"Kontener {SerialNumb} został poprawnie rozładowany.");
+        }
     }
     
 }

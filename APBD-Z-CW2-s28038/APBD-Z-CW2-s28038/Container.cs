@@ -21,7 +21,7 @@ public abstract class Container
         OwnWeight = ownWeight;
         OnShip = onShip;
     }
-    
+
     public abstract void Load(string productType, double itemMass);
     public abstract void Unload();
 

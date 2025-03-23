@@ -4,15 +4,15 @@ public class Ship
 {
     public string Name { get; }
     public int MaxContNum { get; }
-    public double MaxContWeight { get; }
+    public double MaxContWeightTons { get; }
     public double MaxSpeed { get; set; }
     private List<Container>? containers = new();
 
-    public Ship(string name, int maxContNum, double maxContWeight, double maxSpeed)
+    public Ship(string name, int maxContNum, double maxContWeightTons, double maxSpeed)
     {
         Name = name;
         MaxContNum = maxContNum;
-        MaxContWeight = maxContWeight;
+        MaxContWeightTons = maxContWeightTons;
         MaxSpeed = maxSpeed;
     }
 
@@ -25,7 +25,7 @@ public class Ship
             Console.WriteLine($"[SHIP {Name}] Przekroczono limit kontenerów na pokładzie.");
             return false;
         }
-        else if (newTotalWeight > MaxContWeight * 1000)
+        else if (newTotalWeight > MaxContWeightTons * 1000)
         {
             Console.WriteLine($"[SHIP {Name}] Przekroczono limit waowy statku.");
             return false;
@@ -33,7 +33,7 @@ public class Ship
         
         containers.Add(container);
         container.OnShip = true;
-        Console.WriteLine($"[SHIP {Name}] Załadowano kontener {container.SerialNumb}");
+        Console.WriteLine($"[SHIP {Name}] Załadowano kontener {container.SerialNumb}.");
         return true;
     }
 
@@ -58,8 +58,10 @@ public class Ship
         {
             if (containers[i].SerialNumb == serialNumb)
             {
+                containers[i].OnShip = false;
                 containers[i] = cont2;
-                Console.WriteLine($"[SHIP {Name}] Kontener {containers[i]} został zastąpiony kontenerem {cont2}");
+                containers[i].OnShip = true;
+                Console.WriteLine($"[SHIP {Name}] Kontener {serialNumb} został zastąpiony kontenerem {cont2.SerialNumb}");
                 return true;
             }
         }
@@ -71,18 +73,18 @@ public class Ship
         var container = containers?.FirstOrDefault(c => c.SerialNumb == serialNumb);
         if (container == null)
         {
-            Console.WriteLine($"[SHIP {ship1}] Nie znaleziono kontenera {serialNumb}.");
+            Console.WriteLine($"[SHIP {ship1.Name}] Nie znaleziono kontenera {serialNumb}.");
             return false;
         }
-        else if (ship2.LoadCont(container))
+        else if (ship1.RemoveCont(serialNumb))
         {
-            ship1.RemoveCont(serialNumb);
-            Console.WriteLine($"[TRANSFER] Kontener {serialNumb} został przeładowany ze statku {ship1} na statek {ship2}.");
+            ship2.LoadCont(container);
+            Console.WriteLine($"[TRANSFER] Kontener {container.SerialNumb} został przeładowany ze statku {ship1.Name} na statek {ship2.Name}.");
             return true;
         }
         else
         {
-            Console.WriteLine($"[TRANSFER] Nie udało się załadowanć kontenera {serialNumb}.");
+            Console.WriteLine($"[TRANSFER] Nie udało się załadowanć kontenera {container.SerialNumb}.");
             return false;
         }
     }
@@ -104,6 +106,6 @@ public class Ship
 
     public override string ToString()
     {
-        return $"[SHIP {Name}] \n MaxPrędkość: {MaxSpeed} \n MaxLiczbaKontenerów: {MaxContNum} \n MaxDopuszczalnaWaga: {MaxContWeight}";
+        return $"[SHIP {Name}] \n MaxPrędkość: {MaxSpeed} \n MaxLiczbaKontenerów: {MaxContNum} \n MaxDopuszczalnaWaga: {MaxContWeightTons}";
     }
 }

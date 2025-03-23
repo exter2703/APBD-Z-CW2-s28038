@@ -4,32 +4,51 @@ public class RefrigeratedCont : Container
 {
     public string? ProductType { get; private set; }
     public double Temperature { get; }
-    public bool OnShip { get; set; }
 
-    public RefrigeratedCont(double maxCapacity, double ownWeight, double height, double depth, double temperature)
-        : base('C', maxCapacity, ownWeight, height, depth, onShip:false)
+    public RefrigeratedCont(double maxCapacity, double ownWeight, double height, double depth, double temperature, bool onShip = false)
+        : base('C', height, depth, maxCapacity, ownWeight, onShip)
     {
         Temperature = temperature;
     }
 
     public override void Load(string productType, double itemMass)
     {
-        if (itemMass > MaxCapacity) throw new OverflowException($"Przekroczono pojemność kontenera {SerialNumb}");
-        
-        if (ProductType == null)
+        if (OnShip)
         {
-            ProductType = productType;
+            Console.WriteLine($"Nie można załadować kontenera {SerialNumb}, ponieważ jest on na statku.");
         }
-        else if (ProductType != productType)
+        else
         {
-            throw new InvalidOperationException($"Kontener {SerialNumb} może przechowywać tylko {ProductType}, a nie {productType}");
+            if (ItemMass > MaxCapacity) throw new OverflowException($"Przekroczono pojemność kontenera {SerialNumb}");
+            else
+            {
+                ItemMass += itemMass;
+                Console.WriteLine($"Załadowano {itemMass} kg do kontenera {SerialNumb}.");
+            }
+
+            if (ProductType == null)
+            {
+                ProductType = productType;
+            }
+            else if (ProductType != productType)
+            {
+                throw new InvalidOperationException(
+                    $"Kontener {SerialNumb} może przechowywać tylko {ProductType}, a nie {productType}");
+            }
         }
-        ItemMass = itemMass;
     }
 
     public override void Unload()
     {
-        ItemMass = 0;
-        ProductType = null;
+        if (OnShip)
+        {
+            Console.WriteLine($"Nie można rozładować kontenera {SerialNumb}, ponieważ jest on na statku.");
+        }
+        else
+        {
+            ItemMass = 0;
+            ProductType = null;
+            Console.WriteLine($"Kontener {SerialNumb} został poprawnie rozładowany.");
+        }
     }
 }
